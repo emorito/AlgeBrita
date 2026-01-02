@@ -1,0 +1,41 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// Esquema para Juego Educativo de Álgebra para Niños
+model Player {
+  id        String   @id @default(cuid())
+  name      String
+  coins     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  progress  Progress[]
+}
+
+model Progress {
+  id              String   @id @default(cuid())
+  playerId        String
+  levelType       String   // monomial, binomial, trinomial, quadrinomial
+  level           Int      // Número de nivel dentro del tipo
+  score           Int      // Mejor puntaje
+  completed       Boolean  @default(false)
+  coinsEarned     Int      @default(0)
+  attempts        Int      @default(0)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  player          Player   @relation(fields: [playerId], references: [id], onDelete: Cascade)
+
+  @@unique([playerId, levelType, level])
+}
